@@ -1,6 +1,10 @@
 <html>
   <body>
     <h1>Hello World!</h1>
-    <p>Welcome to the world of programming.</p>
+    <ul>
+      {% for customer in customers %}
+        <li>{{customer.first_name}} {{customer.last_name}}</li>
+      {% endfor %}
+    </ul>
   </body>
 </html>
