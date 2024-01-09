@@ -1,10 +1,8 @@
 from django.contrib import admin, messages
-from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
-from tags.models import TaggedItem
 from .models import Product, Customer, Collection
 
 
