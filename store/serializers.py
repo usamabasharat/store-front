@@ -74,6 +74,8 @@ class AddToCartItemSerializer(serializers.ModelSerializer):
     if not Product.objects.filter(pk=value):
       raise serializers.ValidationError('Product with this id does not exist.')
 
+    return value
+
   def save(self, **kwargs):
     cart_id = self.context['cart_id']
     product_id = self.validated_data['product_id']
@@ -93,3 +95,10 @@ class AddToCartItemSerializer(serializers.ModelSerializer):
   class Meta:
     model = CartItem
     fields = ['id', 'product_id', 'quantity']
+
+
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = CartItem
+    fields = ['quantity']
