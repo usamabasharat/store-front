@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
-from .models import Product, Customer, Collection
+from .models import Product, Customer, Collection, ProductImages
 
 
 class InventoryListFilter(admin.SimpleListFilter):
@@ -20,11 +20,22 @@ class InventoryListFilter(admin.SimpleListFilter):
       return queryset.filter(inventory__lt=10)
 
 
+class ProductImageInline(admin.TabularInline):
+  model = ProductImages
+  readonly_fields = ['thumbnail']
+
+  def thumbnail(self, instance):
+    if instance.image.name != '':
+      return format_html(f'<img src={instance.image.url} class="thumbnail"/>')
+    return ''
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
   autocomplete_fields = ['collection']
   prepopulated_fields = {'slug': ['title']}
   actions = ['clear_inventory']
+  inlines = [ProductImageInline]
   list_display = ['title',
                   'unit_price',
                   'inventory_status',
@@ -51,6 +62,11 @@ class ProductAdmin(admin.ModelAdmin):
 
   def collection_title(self, product):
     return product.collection.title
+
+  class Media:
+    css = {
+        'all': ['store/styles.css']
+    }
 
 
 @admin.register(Customer)
