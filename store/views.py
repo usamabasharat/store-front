@@ -2,18 +2,22 @@ from django.db.models import Count
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from .permissions import isAdminOrReadOnly
 from .filters import ProductFilter
 from .pagination import DefaultPagination
-from .models import Product, Collection, Review, Cart, CartItem
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemsSerializer, AddToCartItemSerializer, UpdateCartItemSerializer
+from .models import Product, Collection, Review, Cart, CartItem, Customer
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemsSerializer, AddToCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
 
 
 class ProductViewSet(ModelViewSet):
   queryset = Product.objects.all()
   serializer_class = ProductSerializer
+  permission_classes = [isAdminOrReadOnly]
   filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
   filterset_class = ProductFilter
   search_fields = ['title', 'description']
@@ -28,6 +32,7 @@ class CollectionViewSet(ModelViewSet):
   queryset = Collection.objects.annotate(
       products_count=Count('products')).all()
   serializer_class = CollectionSerializer
+  permission_classes = [isAdminOrReadOnly]
 
   def destroy(self, request, *args, **kwargs):
     if Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
@@ -45,7 +50,7 @@ class ReviewViewSet(ModelViewSet):
     return {'product_id': self.kwargs['product_pk']}
 
 
-class CartViewSet(CreateModelMixin, GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
+class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
   queryset = Cart.objects.prefetch_related('items__product').all()
   serializer_class = CartSerializer
 
@@ -66,3 +71,22 @@ class CartItemsViewSet(ModelViewSet):
 
   def get_queryset(self):
     return CartItem.objects.filter(cart_id=self.kwargs['cart_pk']).select_related('product')
+
+
+class CustomerViewSet(ModelViewSet):
+  queryset = Customer.objects.all()
+  serializer_class = CustomerSerializer
+  permission_classes = [IsAdminUser]
+
+  @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+  def me(self, request):
+    (customer, created) = Customer.objects.get_or_create(user_id=request.user.id)
+
+    if request.method == 'GET':
+      serializer = CustomerSerializer(customer)
+      return Response(serializer.data)
+    elif request.method == 'PUT':
+      serializer = CustomerSerializer(customer, data=request.data)
+      serializer.is_valid(raise_exception=True)
+      serializer.save()
+      return Response(serializer.data)
