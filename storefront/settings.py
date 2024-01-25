@@ -179,3 +179,12 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 ADMINS = [
     ('Admin', env('DEFAULT_FROM_EMAIL'))
 ]
+
+CALARY_BROKER_URL = 'redis://localhost:6379/1'
+CALARY_BEAT_SCHEDULE = {
+    'notify_customers': {
+        'task': 'playground.tasks.notify_customer',
+        'schedule': 5,
+        'args': ['Hello World']
+    }
+}

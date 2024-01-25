@@ -1,6 +1,7 @@
 from django.core.mail import send_mail, mail_admins, BadHeaderError, EmailMessage
 from templated_mail.mail import BaseEmailMessage
 from django.shortcuts import render
+from .tasks import notify_customer
 import environ
 
 env = environ.Env()
@@ -8,6 +9,9 @@ environ.Env.read_env()
 
 
 def say_hello(request):
+  # Background task
+  notify_customer.delay('hello')
+
   try:
     # Templated Email
     message = BaseEmailMessage(
