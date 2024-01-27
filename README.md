@@ -1,6 +1,6 @@
 # Storefront
 
-- This is ecommerce store application built in Python & Django.
+- This is ecommerce store API only application built in Python & Django.
 
 ## Prerequisits
 
@@ -36,4 +36,4 @@
 
 ## App URL
 
-- http://127.0.0.1:8000//sotre
+- http://127.0.0.1:8000/store
