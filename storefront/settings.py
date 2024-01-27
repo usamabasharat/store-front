@@ -92,7 +92,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env('DB_NAME'),
-        'HOST': 'localhost',
+        'HOST': 'mysql',
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
     }
@@ -180,7 +180,7 @@ ADMINS = [
     ('Admin', env('DEFAULT_FROM_EMAIL'))
 ]
 
-CALARY_BROKER_URL = 'redis://localhost:6379/1'
+CALARY_BROKER_URL = 'redis://redis:6379/1'
 CALARY_BEAT_SCHEDULE = {
     'notify_customers': {
         'task': 'playground.tasks.notify_customer',
@@ -192,10 +192,14 @@ CALARY_BEAT_SCHEDULE = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/2',
+        'LOCATION': 'redis://redis:6379/2',
         'TIMEOUT': 10 * 60,
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
+}
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True
 }
