@@ -19,6 +19,7 @@ redis = "*"
 celery = "*"
 flower = "*"
 django-redis = "*"
+django-environ = "*"
 
 [dev-packages]
 pytest = "*"
@@ -29,4 +30,4 @@ pytest-cov = "*"
 locust = "*"
 
 [requires]
-python_version = "2.7"
+python_version = "3.11.6"
