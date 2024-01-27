@@ -28,11 +28,11 @@
 
 ## Prepare & Start Server
 
-- docker-compose up --build
+- `docker-compose up --build`
 
 ## Populate  Database with Sample Data (Optional)
 
-- docker-compose run web python manage.py seed_db
+- `docker-compose run web python manage.py seed_db`
 
 ## App URL
 
